@@ -40,6 +40,19 @@ In the Mixpost service settings, add these **environment variables**:
 | `REDIS_PASSWORD` | `${{Redis.REDISPASSWORD}}` |
 | `PORT` | `9000` |
 
+#### Cloudflare R2 Storage (recommended for media/video uploads)
+
+| Variable | Value |
+|---|---|
+| `MIXPOST_DISK` | `s3` |
+| `AWS_ACCESS_KEY_ID` | Your R2 API token Access Key ID |
+| `AWS_SECRET_ACCESS_KEY` | Your R2 API token Secret Access Key |
+| `AWS_DEFAULT_REGION` | `auto` |
+| `AWS_BUCKET` | Your R2 bucket name |
+| `AWS_ENDPOINT` | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
+| `AWS_URL` | `https://pub-<hash>.r2.dev` (your R2 public bucket URL) |
+| `AWS_USE_PATH_STYLE_ENDPOINT` | `true` |
+
 > The `${{ServiceName.VAR}}` syntax is Railway's [reference variable](https://docs.railway.com/guides/variables#referencing-another-services-variable) format. It auto-resolves to the actual values from your MySQL and Redis services.
 
 ### 5. Expose the service
@@ -54,6 +67,26 @@ Default credentials:
 - **Password:** `changeme`
 
 **Change these immediately after first login.**
+
+## Cloudflare R2 Setup
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) → **R2 Object Storage**
+2. **Create a bucket** (e.g. `mixpost-media`)
+3. In bucket settings, enable **Public Access** (required — Instagram API needs public URLs for media)
+4. Go to **R2 Overview** → **Manage R2 API Tokens** → **Create API token**
+   - Permissions: **Object Read & Write**
+   - Scope: your bucket
+5. Copy the **Access Key ID**, **Secret Access Key**, and your **Account ID** into the Railway env vars above
+
+**Free tier:** 10 GB storage, 10 million reads/mo, 1 million writes/mo, zero egress fees.
+
+## Custom Domain (required for Facebook/Instagram)
+
+1. In Railway, go to your Mixpost service → **Settings** → **Networking**
+2. Add your custom domain (e.g. `mixpost.yourdomain.com`)
+3. Add the CNAME record Railway provides to your DNS
+4. Railway auto-provisions SSL via Let's Encrypt
+5. Update `APP_URL` and `APP_DOMAIN` env vars to use your custom domain
 
 ## Cost
 
