@@ -1,0 +1,1 @@
+FROM inovector/mixpost:latest
